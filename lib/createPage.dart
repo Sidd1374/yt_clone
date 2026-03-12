@@ -7,10 +7,9 @@ class createPageFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: th.ytBackground,
       body: Center(
         child: Text("This is CreatePage",
-          style: TextStyle(color: th.ytTextPrimary),
+          style: TextStyle(color: context.yt.textPrimary),
         ),
       ),
     );

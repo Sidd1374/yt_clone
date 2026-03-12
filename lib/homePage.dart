@@ -1,169 +1,102 @@
 import 'package:flutter/material.dart';
 import 'theme_yt.dart' as th;
+import 'yt_widgets.dart';
+import 'containerFrame.dart';
 
 class homePageFrame extends StatelessWidget {
   const homePageFrame({super.key});
 
   @override
   Widget build(BuildContext context) {
-
-    const List<String> _Cat = [
+    const List<String> categories = [
       'All',
-      'Explore',
-      'Techonogy',
+      'Technology',
       'APIs',
       'Music',
       'Podcasts',
       'AI',
-      'Gaming'
+      'Gaming',
+      'Movies',
+      'Live',
     ];
 
     return Scaffold(
-      backgroundColor: th.ytBackground,
-        body: Column(
-          children: [
-            SizedBox(
-              height: 50,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: _Cat.length,
-                itemBuilder: (context, index) {
-                  return _buildChip(_Cat[index]);
-                },
-              ),
+      body: Builder(
+        builder: (scaffoldContext) {
+          Widget exploreIcon = Container(
+            margin: const EdgeInsets.only(left: 4, right: 4, top: 8, bottom: 8),
+            decoration: BoxDecoration(
+              color: context.yt.chipBg,
+              borderRadius: BorderRadius.circular(8),
             ),
-            Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  children: [
-                    _buildVideo(
-                      "Flutter Tutorial for Beginners",
-                      "assets/th1.jpg",
-                      "1.2M views",
-                      "2 days ago",
-                      "assets/pi1.png",
-                    ),
-                    _buildVideo(
-                      "Flutter Tutorial for Beginners",
-                      "assets/th2.jpg",
-                      "1.2M views",
-                      "2 days ago",
-                      "assets/pi1.png",
-                    ),
-                    _buildVideo(
-                      "Flutter Tutorial for Beginners",
-                      "assets/th1.jpg",
-                      "1.2M views",
-                      "2 days ago",
-                      "assets/pi1.png",
-                    ),
-                    _buildVideo(
-                      "Flutter Tutorial for Beginners",
-                      "assets/th2.jpg",
-                      "1.2M views",
-                      "2 days ago",
-                      "assets/pi1.png",
-                    ),
-                    _buildVideo(
-                      "Flutter Tutorial for Beginners",
-                      "assets/th1.jpg",
-                      "1.2M views",
-                      "2 days ago",
-                      "assets/pi1.png",
-                    ),
-                  ],
+            child: IconButton(
+              icon: Icon(
+                Icons.explore_outlined,
+                color: context.yt.textPrimary,
+                size: 20,
+              ),
+              onPressed: () {
+                rootScaffoldKey.currentState?.openDrawer();
+              },
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 40, minHeight: 32),
+            ),
+          );
+
+          return Column(
+            children: [
+              buildCategoryChips(context, categories, leading: exploreIcon),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      buildVideoCard(
+                        scaffoldContext,
+                        title: "Flutter Tutorial for Beginners",
+                        thumbnailPath: "assets/images/th1.jpg",
+                        views: "1.2M views",
+                        time: "2 days ago",
+                        profileImage: "assets/images/pi1.png",
+                        channelName: "Flutter",
+                      ),
+                      buildVideoCard(
+                        scaffoldContext,
+                        title: "Building a YouTube Clone in Flutter",
+                        thumbnailPath: "assets/images/th2.jpg",
+                        views: "890K views",
+                        time: "1 week ago",
+                        profileImage: "assets/images/pi1.png",
+                        channelName: "TechBro",
+                      ),
+
+                      buildShortsSection(scaffoldContext),
+
+                      buildVideoCard(
+                        scaffoldContext,
+                        title: "Dart Programming Complete Course",
+                        thumbnailPath: "assets/images/th1.jpg",
+                        views: "2.3M views",
+                        time: "3 days ago",
+                        profileImage: "assets/images/pi1.png",
+                        channelName: "CodeLab",
+                      ),
+                      buildVideoCard(
+                        scaffoldContext,
+                        title: "Top 10 Flutter Packages in 2026",
+                        thumbnailPath: "assets/images/th2.jpg",
+                        views: "450K views",
+                        time: "5 days ago",
+                        profileImage: "assets/images/pi1.png",
+                        channelName: "DevTips",
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-
-          ],
-        )
+            ],
+          );
+        },
+      ),
     );
   }
-}
-
-
-Widget _buildVideo(String text, String imgPath, String views, String time,String profileImage){
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-
-          Image.asset(
-            imgPath,
-            width: double.infinity,
-            fit: BoxFit.cover,
-          ),
-
-          const SizedBox(height: 8),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-
-              CircleAvatar(
-                backgroundImage: AssetImage(profileImage),
-                radius: 18,
-              ),
-
-              const SizedBox(width: 10),
-
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      text,
-                      style: TextStyle(
-                        color: th.ytTextPrimary,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-
-                    const SizedBox(height: 4),
-
-                    Text(
-                      "$views • $time",
-                      style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // More Options Icon
-              const Icon(
-                Icons.more_vert,
-                color: Colors.grey,
-              )
-            ],
-          ),
-        ],
-      ),
-    );
-}
-
-Widget _buildChip(String text) {
-  return Container(
-    margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-    decoration: BoxDecoration(
-      color: th.ytSurface,
-      borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: Colors.grey),
-    ),
-    child: Center(
-      child: Text(
-        text,
-        style: TextStyle(
-          color: th.ytTextPrimary,
-          fontSize: 14,
-        ),
-      ),
-    ),
-  );
 }
