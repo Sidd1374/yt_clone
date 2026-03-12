@@ -62,10 +62,11 @@ class _ContainerFrameState extends State<ContainerFrame> {
       },
       child: Scaffold(
         key: rootScaffoldKey,
-        drawerEdgeDragWidth: 40,
-        drawerEnableOpenDragGesture: true,
+        drawerEdgeDragWidth: 0,
+        drawerEnableOpenDragGesture: false,
         drawer: _buildExploreDrawer(context),
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: _selectedIndex == 4
               ? null
               : Row(
@@ -82,14 +83,15 @@ class _ContainerFrameState extends State<ContainerFrame> {
             IconButton(onPressed: () {}, icon: Icon(Icons.search)),
             if (_selectedIndex == 4)
               IconButton(onPressed: () {}, icon: Icon(Icons.settings_outlined)),
-            IconButton(
-              onPressed: () {
-                themeNotifier.value = themeNotifier.value == ThemeMode.light
-                    ? ThemeMode.dark
-                    : ThemeMode.light;
-              },
-              icon: Icon(Icons.brightness_6),
-            ),
+            if (_selectedIndex == 4)
+              IconButton(
+                onPressed: () {
+                  themeNotifier.value = themeNotifier.value == ThemeMode.light
+                      ? ThemeMode.dark
+                      : ThemeMode.light;
+                },
+                icon: Icon(Icons.brightness_6),
+              ),
           ],
         ),
         body: _widgetOptions.elementAt(_selectedIndex),
@@ -166,21 +168,9 @@ Widget _buildExploreDrawer(BuildContext context) {
   ];
 
   final List<Map<String, String>> ytApps = [
-    {
-      'label': 'YouTube Studio',
-      'image':
-          'https://play-lh.googleusercontent.com/MFXGM-LMDsCqBMVgMPSAjFwM1Gm_mMqDKjBaBcGbcDqMTnR1VEqElYlNyp4XEJzUQ=w240-h480-rw',
-    },
-    {
-      'label': 'YouTube Music',
-      'image':
-          'https://play-lh.googleusercontent.com/GnYnNfKBr2nysHBYgYRCQtcv_RRNN0Sosn47F5ArKJu89DMR3_jHRAazoIVsPUoaMg=w240-h480-rw',
-    },
-    {
-      'label': 'YouTube Kids',
-      'image':
-          'https://play-lh.googleusercontent.com/ZS5E4BzZVgIaKEdFnYqz_yDDMGRUlGJGrBB0Cg0WAuRLMBuCmcEMcLUqBdaySaEf4g=w240-h480-rw',
-    },
+    {'label': 'YouTube Studio', 'image': 'assets/icons/yt_studio_logo.svg'},
+    {'label': 'YouTube Music', 'image': 'assets/icons/yt_music_logo.svg'},
+    {'label': 'YouTube Kids', 'image': 'assets/icons/yt_kids_logo.svg'},
   ];
 
   return Drawer(
@@ -244,13 +234,13 @@ Widget _buildExploreDrawer(BuildContext context) {
                 (app) => ListTile(
                   leading: ClipRRect(
                     borderRadius: BorderRadius.circular(6),
-                    child: Image.network(
+                    child: SvgPicture.asset(
                       app['image']!,
                       width: 26,
                       height: 26,
                       errorBuilder: (_, __, ___) => Icon(
                         Icons.play_circle_outline,
-                        color: Colors.red,
+                        // color: Colors.red,
                         size: 26,
                       ),
                     ),

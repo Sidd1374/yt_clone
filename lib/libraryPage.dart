@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'theme_yt.dart' as th;
+import 'package:flutter_svg/flutter_svg.dart';
 
 class libraryPageFrame extends StatelessWidget {
   const libraryPageFrame({super.key});
@@ -34,27 +35,39 @@ class libraryPageFrame extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            _buildMenuItem(context, Icons.play_arrow_outlined, "Your videos"),
             _buildMenuItemImage(
               context,
-              'assets/icons/download.png',
+              'assets/icons/videos_logo.svg',
+              "Your videos",
+            ),
+            _buildMenuItemImage(
+              context,
+              'assets/icons/download.svg',
               "Downloads",
             ),
-            _buildMenuItemImage(context, 'assets/icons/movies.png', "Films"),
+            _buildMenuItemImage(
+              context,
+              'assets/icons/films_logo.svg',
+              "Films",
+            ),
             _buildMenuItem(context, Icons.school_outlined, "Courses"),
             _buildMenuItem(context, Icons.content_cut, "Clips"),
-            _buildMenuItemImage(context, 'assets/icons/rewards.png', "Badges"),
+            _buildMenuItemImage(
+              context,
+              'assets/icons/rewards_logo.svg',
+              "Badges",
+            ),
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Divider(color: context.yt.divider, height: 32),
             ),
 
-            _buildMenuItem(
+            _buildMenuItemImage(
               context,
-              Icons.workspace_premium,
+              'assets/icons/p_logo_yt.svg',
               "Premium benefits",
-              iconColor: Colors.red,
+              applyColorFilter: false,
             ),
 
             const SizedBox(height: 24),
@@ -588,14 +601,17 @@ Widget _buildMenuItem(
 Widget _buildMenuItemImage(
   BuildContext context,
   String assetPath,
-  String label,
-) {
+  String label, {
+  bool applyColorFilter = true,
+}) {
   return ListTile(
-    leading: Image.asset(
+    leading: SvgPicture.asset(
       assetPath,
-      width: 26,
-      height: 26,
-      color: context.yt.textPrimary,
+      width: 24,
+      height: 24,
+      colorFilter: applyColorFilter
+          ? ColorFilter.mode(context.yt.textPrimary, BlendMode.srcIn)
+          : null,
     ),
     title: Text(
       label,
