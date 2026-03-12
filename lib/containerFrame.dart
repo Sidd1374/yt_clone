@@ -23,9 +23,13 @@ class ContainerFrame extends StatefulWidget {
 class _ContainerFrameState extends State<ContainerFrame> {
   int _selectedIndex = 0;
 
-  static final List<Widget> _widgetOptions = <Widget>[
+  List<Widget> get _widgetOptions => <Widget>[
     homePageFrame(),
-    Container(),
+    shortsPageFrame(
+      onBack: () {
+        setState(() => _selectedIndex = 0);
+      },
+    ),
     createPageFrame(),
     subsPageFrame(),
     libraryPageFrame(),
@@ -33,14 +37,6 @@ class _ContainerFrameState extends State<ContainerFrame> {
 
   // handles bottom nav tap
   void _onItemTapped(int index) {
-    if (index == 1) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const shortsPageFrame()),
-      );
-      return;
-    }
-
     setState(() {
       _selectedIndex = index;
     });
@@ -65,51 +61,60 @@ class _ContainerFrameState extends State<ContainerFrame> {
         drawerEdgeDragWidth: 0,
         drawerEnableOpenDragGesture: false,
         drawer: _buildExploreDrawer(context),
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: _selectedIndex == 4
-              ? null
-              : Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Image.asset('assets/icons/logo_yt.png', height: 32),
-                    SizedBox(width: 8),
-                    Flexible(child: Text(widget.title)),
-                  ],
-                ),
-          actions: [
-            IconButton(onPressed: () {}, icon: Icon(Icons.cast)),
-            IconButton(onPressed: () {}, icon: Icon(Icons.notifications_none)),
-            IconButton(onPressed: () {}, icon: Icon(Icons.search)),
-            if (_selectedIndex == 4)
-              IconButton(onPressed: () {}, icon: Icon(Icons.settings_outlined)),
-            if (_selectedIndex == 4)
-              IconButton(
-                onPressed: () {
-                  themeNotifier.value = themeNotifier.value == ThemeMode.light
-                      ? ThemeMode.dark
-                      : ThemeMode.light;
-                },
-                icon: Icon(Icons.brightness_6),
+        appBar: _selectedIndex == 1
+            ? null
+            : AppBar(
+                automaticallyImplyLeading: false,
+                title: _selectedIndex == 4
+                    ? null
+                    : Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Image.asset('assets/icons/logo_yt.png', height: 22),
+                          SizedBox(width: 2),
+                          Flexible(child: Text(widget.title)),
+                        ],
+                      ),
+                actions: [
+                  IconButton(onPressed: () {}, icon: Icon(Icons.cast)),
+                  IconButton(
+                    onPressed: () {},
+                    icon: Icon(Icons.notifications_none),
+                  ),
+                  IconButton(onPressed: () {}, icon: Icon(Icons.search)),
+                  if (_selectedIndex == 4)
+                    IconButton(
+                      onPressed: () {},
+                      icon: Icon(Icons.settings_outlined),
+                    ),
+                  if (_selectedIndex == 4)
+                    IconButton(
+                      onPressed: () {
+                        themeNotifier.value =
+                            themeNotifier.value == ThemeMode.light
+                            ? ThemeMode.dark
+                            : ThemeMode.light;
+                      },
+                      icon: Icon(Icons.brightness_6),
+                    ),
+                ],
               ),
-          ],
-        ),
         body: _widgetOptions.elementAt(_selectedIndex),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
           items: [
             const BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home_filled),
+              icon: Icon(Icons.home_outlined, size: 26),
+              activeIcon: Icon(Icons.home_filled, size: 26),
               label: "Home",
             ),
             BottomNavigationBarItem(
               icon: Builder(
                 builder: (context) => SvgPicture.asset(
                   'assets/icons/shorts24x_outline.svg',
-                  width: 24,
-                  height: 24,
+                  width: 26,
+                  height: 26,
                   colorFilter: ColorFilter.mode(
                     context.yt.iconInactive,
                     BlendMode.srcIn,
@@ -119,8 +124,8 @@ class _ContainerFrameState extends State<ContainerFrame> {
               activeIcon: Builder(
                 builder: (context) => SvgPicture.asset(
                   'assets/icons/shorts24x_filled.svg',
-                  width: 24,
-                  height: 24,
+                  width: 26,
+                  height: 26,
                   colorFilter: ColorFilter.mode(
                     context.yt.iconActive,
                     BlendMode.srcIn,
@@ -129,8 +134,15 @@ class _ContainerFrameState extends State<ContainerFrame> {
               ),
               label: "Shorts",
             ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.add, size: 35),
+            BottomNavigationBarItem(
+              icon: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  shape: BoxShape.circle,
+                ),
+                padding: EdgeInsets.all(8),
+                child: Icon(Icons.add, size: 26),
+              ),
               label: "",
             ),
             const BottomNavigationBarItem(
@@ -140,7 +152,7 @@ class _ContainerFrameState extends State<ContainerFrame> {
             ),
             const BottomNavigationBarItem(
               icon: Icon(Icons.account_circle_outlined),
-              activeIcon: Icon(Icons.account_circle),
+              activeIcon: Icon(Icons.account_circle, size: 26),
               label: "You",
             ),
           ],

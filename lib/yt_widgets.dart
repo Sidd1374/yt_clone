@@ -128,7 +128,14 @@ Widget buildVideoCard(
                   ],
                 ),
               ),
-              Icon(Icons.more_vert, color: context.yt.textSecondary, size: 20),
+              GestureDetector(
+                onTap: () => showVideoOptionsSheet(context),
+                child: Icon(
+                  Icons.more_vert,
+                  color: context.yt.textSecondary,
+                  size: 20,
+                ),
+              ),
             ],
           ),
         ],
@@ -160,7 +167,14 @@ Widget buildShortsSection(BuildContext context) {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            Icon(Icons.chevron_right, color: context.yt.textSecondary),
+            // Icon(Icons.chevron_right, color: context.yt.textSecondary),
+            const Spacer(),
+            Icon(
+              Icons.more_vert,
+              color: context.yt.textSecondary,
+              size: 20,
+              weight: 1000,
+            ),
           ],
         ),
       ),
@@ -188,6 +202,76 @@ Widget buildShortsSection(BuildContext context) {
     ],
   );
 }
+
+Widget buildShortsGridSection(BuildContext context) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+
+      // ---------- Shorts Header ----------
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Row(
+          children: [
+            SvgPicture.asset(
+              'assets/icons/shorts24x_color.svg',
+              width: 24,
+              height: 24,
+            ),
+
+            const SizedBox(width: 8),
+
+            Text(
+              "Shorts",
+              style: TextStyle(
+                color: context.yt.textPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+
+            const Spacer(),
+
+            Icon(
+              Icons.more_vert,
+              color: context.yt.textSecondary,
+              size: 20,
+            ),
+          ],
+        ),
+      ),
+
+      // ---------- Shorts Grid ----------
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: 4, // change to 2 if you want only 2 shorts
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, // 2 columns
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
+            childAspectRatio: 9 / 16,
+          ),
+          itemBuilder: (context, index) {
+            return _buildShortThumbnail(
+              context: context,
+              title: "Short video title #${index + 1}",
+              views: "${(index + 1) * 100}K views",
+              imagePath: index.isEven
+                  ? "assets/images/th1.jpg"
+                  : "assets/images/th2.jpg",
+            );
+          },
+        ),
+      ),
+
+      const SizedBox(height: 8),
+    ],
+  );
+}
+
 
 // builds a single short thumbnail card
 Widget _buildShortThumbnail({
@@ -247,6 +331,73 @@ Widget _buildShortThumbnail({
         ],
       ),
     ),
+  );
+}
+
+// shows youtube-style bottom sheet with video options
+void showVideoOptionsSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: context.yt.surface,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (context) {
+      final items = [
+        (Icons.playlist_play, 'Play next in queue'),
+        (Icons.watch_later_outlined, 'Save to Watch Later'),
+        (Icons.bookmark_border, 'Save to playlist'),
+        (Icons.download_outlined, 'Download video'),
+        (Icons.share_outlined, 'Share'),
+        (Icons.block, 'Not interested'),
+        (Icons.not_interested, "Don't recommend channel"),
+        (Icons.flag_outlined, 'Report'),
+      ];
+
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // drag handle
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 220, 219, 219),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            ...items.map(
+              (item) => InkWell(
+                onTap: () => Navigator.pop(context),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 11,
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(item.$1, color: context.yt.textPrimary, size: 26),
+                      const SizedBox(width: 20),
+                      Text(
+                        item.$2,
+                        style: TextStyle(
+                          color: context.yt.textPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    },
   );
 }
 
