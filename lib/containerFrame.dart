@@ -7,6 +7,7 @@ import 'createPage.dart';
 import 'subscriptionPage.dart';
 import 'libraryPage.dart';
 import 'shortsPage.dart';
+import 'search_page.dart';
 import 'main.dart';
 
 final GlobalKey<ScaffoldState> rootScaffoldKey = GlobalKey<ScaffoldState>();
@@ -81,10 +82,25 @@ class _ContainerFrameState extends State<ContainerFrame> {
                     onPressed: () {},
                     icon: Icon(Icons.notifications_none),
                   ),
-                  IconButton(onPressed: () {}, icon: Icon(Icons.search)),
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const SearchPage()),
+                      );
+                    },
+                    icon: Icon(Icons.search),
+                  ),
                   if (_selectedIndex == 4)
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const _SettingsPage(),
+                          ),
+                        );
+                      },
                       icon: Icon(Icons.settings_outlined),
                     ),
                   if (_selectedIndex == 4)
@@ -105,16 +121,16 @@ class _ContainerFrameState extends State<ContainerFrame> {
           onTap: _onItemTapped,
           items: [
             const BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined, size: 26),
-              activeIcon: Icon(Icons.home_filled, size: 26),
+              icon: Icon(Icons.home_outlined, size: 28),
+              activeIcon: Icon(Icons.home_filled, size: 28),
               label: "Home",
             ),
             BottomNavigationBarItem(
               icon: Builder(
                 builder: (context) => SvgPicture.asset(
                   'assets/icons/shorts24x_outline.svg',
-                  width: 26,
-                  height: 26,
+                  width: 28,
+                  height: 28,
                   colorFilter: ColorFilter.mode(
                     context.yt.iconInactive,
                     BlendMode.srcIn,
@@ -124,8 +140,8 @@ class _ContainerFrameState extends State<ContainerFrame> {
               activeIcon: Builder(
                 builder: (context) => SvgPicture.asset(
                   'assets/icons/shorts24x_filled.svg',
-                  width: 26,
-                  height: 26,
+                  width: 28,
+                  height: 28,
                   colorFilter: ColorFilter.mode(
                     context.yt.iconActive,
                     BlendMode.srcIn,
@@ -140,23 +156,121 @@ class _ContainerFrameState extends State<ContainerFrame> {
                   color: Colors.grey[100],
                   shape: BoxShape.circle,
                 ),
-                padding: EdgeInsets.all(8),
-                child: Icon(Icons.add, size: 26),
+                padding: EdgeInsets.all(9),
+                child: Icon(Icons.add, size: 28),
               ),
               label: "",
             ),
             const BottomNavigationBarItem(
-              icon: Icon(Icons.subscriptions_outlined),
-              activeIcon: Icon(Icons.subscriptions),
+              icon: Icon(Icons.subscriptions_outlined, size: 28),
+              activeIcon: Icon(Icons.subscriptions, size: 28),
               label: "Subscriptions",
             ),
             const BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle_outlined),
-              activeIcon: Icon(Icons.account_circle, size: 26),
+              icon: Icon(Icons.account_circle_outlined, size: 28),
+              activeIcon: Icon(Icons.account_circle, size: 28),
               label: "You",
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _SettingsPage extends StatelessWidget {
+  const _SettingsPage();
+
+  Widget _item(
+    BuildContext context,
+    IconData icon,
+    String title,
+    VoidCallback onTap,
+  ) {
+    return ListTile(
+      leading: Icon(
+        icon,
+        size: 26,
+        color: Theme.of(context).extension<th.YtColors>()!.textPrimary,
+      ),
+      title: Text(
+        title,
+        style: th.YtText.settingsItem.copyWith(
+          color: Theme.of(context).extension<th.YtColors>()!.textPrimary,
+        ),
+      ),
+      minLeadingWidth: 24,
+      minTileHeight: 48,
+      horizontalTitleGap: 16,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+      onTap: onTap,
+    );
+  }
+
+  Widget _section(BuildContext context, String title, List<Widget> children) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 22, 20, 8),
+          child: Text(
+            title,
+            style: th.YtText.settingsSection.copyWith(
+              color: Theme.of(context).extension<th.YtColors>()!.textPrimary,
+            ),
+          ),
+        ),
+        ...children,
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        titleSpacing: 0,
+        title: const Text("Settings"),
+        leading: const BackButton(),
+      ),
+      body: ListView(
+        children: [
+          _section(context, "Account", [
+            _item(context, Icons.settings, "General", () {}),
+            _item(context, Icons.switch_account, "Switch account", () {}),
+            _item(context, Icons.family_restroom, "Family Centre", () {}),
+            _item(context, Icons.language, "Languages", () {}),
+            _item(context, Icons.timer, "Time management", () {}),
+            _item(context, Icons.notifications, "Notifications", () {}),
+            _item(context, Icons.credit_card, "Billing and payments", () {}),
+            _item(context, Icons.history, "Manage all history", () {}),
+            _item(context, Icons.lock, "Privacy", () {}),
+            _item(context, Icons.link, "Connected apps", () {}),
+          ]),
+          const SizedBox(height: 6),
+          _section(context, "Video and audio preferences", [
+            _item(context, Icons.hd, "Quality", () {}),
+            _item(context, Icons.play_arrow, "Playback", () {}),
+            _item(context, Icons.closed_caption, "Captions", () {}),
+            _item(context, Icons.tune, "Data saving", () {}),
+            _item(context, Icons.download, "Background and downloads", () {}),
+            _item(context, Icons.chat, "Live chat", () {}),
+            _item(context, Icons.accessibility, "Accessibility", () {}),
+            _item(context, Icons.tv, "Watch on TV", () {}),
+          ]),
+          const SizedBox(height: 6),
+          _section(context, "Help and policy", [
+            _item(context, Icons.help_outline, "Help", () {}),
+            _item(
+              context,
+              Icons.description,
+              "YouTube Terms of Service",
+              () {},
+            ),
+            _item(context, Icons.feedback, "Send feedback", () {}),
+            _item(context, Icons.info_outline, "About", () {}),
+          ]),
+        ],
       ),
     );
   }
@@ -205,10 +319,9 @@ Widget _buildExploreDrawer(BuildContext context) {
               const SizedBox(width: 4),
               Text(
                 "Premium",
-                style: TextStyle(
+                style: th.YtText.appBarTitle.copyWith(
                   color: context.yt.textPrimary,
                   fontSize: 22,
-                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
@@ -228,9 +341,9 @@ Widget _buildExploreDrawer(BuildContext context) {
                   ),
                   title: Text(
                     cat['label'],
-                    style: TextStyle(
+                    style: th.YtText.settingsItem.copyWith(
                       color: context.yt.textPrimary,
-                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16),
@@ -259,9 +372,9 @@ Widget _buildExploreDrawer(BuildContext context) {
                   ),
                   title: Text(
                     app['label']!,
-                    style: TextStyle(
+                    style: th.YtText.settingsItem.copyWith(
                       color: context.yt.textPrimary,
-                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16),
@@ -282,7 +395,9 @@ Widget _buildExploreDrawer(BuildContext context) {
           ),
           child: Text(
             'Privacy Policy \u00B7 Terms of Service',
-            style: TextStyle(color: context.yt.textSecondary, fontSize: 12),
+            style: th.YtText.videoMeta.copyWith(
+              color: context.yt.textSecondary,
+            ),
           ),
         ),
       ],

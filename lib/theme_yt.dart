@@ -1,4 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+class YtText {
+  static const appBarTitle = TextStyle(
+    fontSize: 19,
+    fontWeight: FontWeight.w800,
+  );
+  static const videoTitle = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w700,
+  );
+  static const videoMeta = TextStyle(fontSize: 13, fontWeight: FontWeight.w600);
+  static const sectionHeader = TextStyle(
+    fontSize: 19,
+    fontWeight: FontWeight.w800,
+  );
+  static const shortsTitle = TextStyle(
+    fontSize: 13,
+    fontWeight: FontWeight.w700,
+  );
+  static const shortsMeta = TextStyle(
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+  );
+  static const body = TextStyle(fontSize: 14, fontWeight: FontWeight.w600);
+  static const bodyMedium = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w700,
+  );
+  static const label = TextStyle(fontSize: 13, fontWeight: FontWeight.w700);
+  static const caption = TextStyle(fontSize: 12, fontWeight: FontWeight.w600);
+  static const button = TextStyle(fontSize: 14, fontWeight: FontWeight.w800);
+  static const settingsSection = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w800,
+  );
+  static const settingsItem = TextStyle(
+    fontSize: 15,
+    fontWeight: FontWeight.w600,
+  );
+}
 
 // custom color set for youtube theme
 class YtColors extends ThemeExtension<YtColors> {
@@ -87,15 +128,17 @@ const _darkColors = YtColors(
 
 final ThemeData ytLightTheme = ThemeData(
   brightness: Brightness.light,
+  textTheme: GoogleFonts.robotoTextTheme(),
+  primaryTextTheme: GoogleFonts.robotoTextTheme(),
   scaffoldBackgroundColor: _lightColors.background,
+  iconTheme: IconThemeData(color: _lightColors.iconActive, size: 26),
   appBarTheme: AppBarTheme(
     backgroundColor: _lightColors.background,
     elevation: 0,
-    iconTheme: IconThemeData(color: _lightColors.iconActive),
-    titleTextStyle: TextStyle(
+    iconTheme: IconThemeData(color: _lightColors.iconActive, size: 26),
+    actionsIconTheme: IconThemeData(color: _lightColors.iconActive, size: 26),
+    titleTextStyle: YtText.appBarTitle.copyWith(
       color: _lightColors.textPrimary,
-      fontSize: 20,
-      fontWeight: FontWeight.w600,
     ),
   ),
   bottomNavigationBarTheme: BottomNavigationBarThemeData(
@@ -103,8 +146,18 @@ final ThemeData ytLightTheme = ThemeData(
     backgroundColor: _lightColors.background,
     selectedItemColor: _lightColors.iconActive,
     unselectedItemColor: _lightColors.iconInactive,
-    selectedLabelStyle: const TextStyle(fontSize: 10),
-    unselectedLabelStyle: const TextStyle(fontSize: 10),
+    selectedLabelStyle: const TextStyle(
+      fontSize: 10,
+      fontWeight: FontWeight.w600,
+    ),
+    unselectedLabelStyle: const TextStyle(
+      fontSize: 10,
+      fontWeight: FontWeight.w600,
+    ),
+  ),
+  listTileTheme: const ListTileThemeData(
+    minLeadingWidth: 24,
+    contentPadding: EdgeInsets.symmetric(horizontal: 20),
   ),
   dividerColor: _lightColors.divider,
   extensions: [_lightColors],
@@ -112,24 +165,34 @@ final ThemeData ytLightTheme = ThemeData(
 
 final ThemeData ytDarkTheme = ThemeData(
   brightness: Brightness.dark,
+  textTheme: GoogleFonts.robotoTextTheme(ThemeData.dark().textTheme),
+  primaryTextTheme: GoogleFonts.robotoTextTheme(ThemeData.dark().textTheme),
   scaffoldBackgroundColor: _darkColors.background,
+  iconTheme: IconThemeData(color: _darkColors.iconActive, size: 26),
   appBarTheme: AppBarTheme(
     backgroundColor: _darkColors.background,
     elevation: 0,
-    iconTheme: IconThemeData(color: _darkColors.iconActive),
-    titleTextStyle: TextStyle(
-      color: _darkColors.textPrimary,
-      fontSize: 20,
-      fontWeight: FontWeight.w600,
-    ),
+    iconTheme: IconThemeData(color: _darkColors.iconActive, size: 26),
+    actionsIconTheme: IconThemeData(color: _darkColors.iconActive, size: 26),
+    titleTextStyle: YtText.appBarTitle.copyWith(color: _darkColors.textPrimary),
   ),
   bottomNavigationBarTheme: BottomNavigationBarThemeData(
     type: BottomNavigationBarType.fixed,
     backgroundColor: _darkColors.background,
     selectedItemColor: _darkColors.iconActive,
     unselectedItemColor: _darkColors.iconInactive,
-    selectedLabelStyle: const TextStyle(fontSize: 10),
-    unselectedLabelStyle: const TextStyle(fontSize: 10),
+    selectedLabelStyle: const TextStyle(
+      fontSize: 10,
+      fontWeight: FontWeight.w600,
+    ),
+    unselectedLabelStyle: const TextStyle(
+      fontSize: 10,
+      fontWeight: FontWeight.w600,
+    ),
+  ),
+  listTileTheme: const ListTileThemeData(
+    minLeadingWidth: 24,
+    contentPadding: EdgeInsets.symmetric(horizontal: 20),
   ),
   dividerColor: _darkColors.divider,
   extensions: [_darkColors],

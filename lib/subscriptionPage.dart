@@ -29,6 +29,29 @@ class subsPageFrame extends StatelessWidget {
       {'name': 'Android', 'image': 'assets/images/pi1.png'},
     ];
 
+    const List<ShortThumbnail> shortsHorizontal = [
+      ShortThumbnail(
+        title: "Flutter State Management",
+        views: "89K views",
+        imagePath: "assets/images/th1.jpg",
+      ),
+      ShortThumbnail(
+        title: "Dart Fundamentals",
+        views: "134K views",
+        imagePath: "assets/images/th2.jpg",
+      ),
+      ShortThumbnail(
+        title: "Firebase & Flutter",
+        views: "267K views",
+        imagePath: "assets/images/th1.jpg",
+      ),
+      ShortThumbnail(
+        title: "Mobile Dev Tips",
+        views: "156K views",
+        imagePath: "assets/images/th2.jpg",
+      ),
+    ];
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -42,12 +65,13 @@ class subsPageFrame extends StatelessWidget {
             buildCategoryChips(context, filterCategories),
 
             // Shorts section
-            buildShortsSection(context),
+            buildShortsSection(context, shortsHorizontal),
 
             Divider(color: context.yt.divider, height: 1),
 
             // Video cards
-            buildVideoCard(context, 
+            buildVideoCard(
+              context,
               title: "What's New in Flutter 4.0",
               thumbnailPath: "assets/images/th1.jpg",
               views: "3.1M views",
@@ -55,7 +79,20 @@ class subsPageFrame extends StatelessWidget {
               profileImage: "assets/images/pi1.png",
               channelName: "Flutter",
             ),
-            buildVideoCard(context, 
+
+            const CommunityPost(
+              channelName: "Flutter",
+              profileImage: "assets/images/pi1.png",
+              timeAgo: "2 days ago",
+              description:
+                  "Flutter 4.0 is here! 🎉 Check out the new features "
+                  "including improved performance, new widgets, and better tooling. "
+                  "Let us know what you think in the comments!",
+              postImage: "assets/images/th2.jpg",
+            ),
+
+            buildVideoCard(
+              context,
               title: "Building Production Apps with Dart",
               thumbnailPath: "assets/images/th2.jpg",
               views: "1.5M views",
@@ -63,7 +100,8 @@ class subsPageFrame extends StatelessWidget {
               profileImage: "assets/images/pi1.png",
               channelName: "DartDev",
             ),
-            buildVideoCard(context, 
+            buildVideoCard(
+              context,
               title: "Firebase Tips and Tricks 2026",
               thumbnailPath: "assets/images/th1.jpg",
               views: "780K views",

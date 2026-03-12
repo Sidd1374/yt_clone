@@ -2,6 +2,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'theme_yt.dart' as th;
 import 'package:flutter_svg/flutter_svg.dart';
+import 'videoPlayerPage.dart';
+import 'yt_widgets.dart';
 
 class libraryPageFrame extends StatelessWidget {
   const libraryPageFrame({super.key});
@@ -97,7 +99,7 @@ Widget _buildProfileHeader(BuildContext context) {
                 "Siddharth sharma",
                 style: TextStyle(
                   color: context.yt.textPrimary,
-                  fontSize: 22,
+                  fontSize: 24,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -106,23 +108,20 @@ Widget _buildProfileHeader(BuildContext context) {
                 children: [
                   Text(
                     "@siddharthsharma6961",
-                    style: TextStyle(
+                    style: th.YtText.videoMeta.copyWith(
                       color: context.yt.textSecondary,
-                      fontSize: 13,
                     ),
                   ),
                   Text(
                     "  •  ",
-                    style: TextStyle(
+                    style: th.YtText.videoMeta.copyWith(
                       color: context.yt.textSecondary,
-                      fontSize: 13,
                     ),
                   ),
                   Text(
                     "View channel",
-                    style: TextStyle(
+                    style: th.YtText.videoMeta.copyWith(
                       color: context.yt.textSecondary,
-                      fontSize: 13,
                     ),
                   ),
                   Icon(
@@ -146,10 +145,11 @@ Widget _buildActionChips(BuildContext context) {
     {'icon': Icons.switch_account_outlined, 'label': 'Switch account'},
     {'icon': Icons.g_mobiledata, 'label': 'Google Account'},
     {'icon': Icons.security_outlined, 'label': 'Turn on Incognito'},
+    {'icon': Icons.share_outlined, 'label': 'Share profile'},
   ];
 
   return SizedBox(
-    height: 44,
+    height: 36,
     child: ListView.builder(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -157,28 +157,32 @@ Widget _buildActionChips(BuildContext context) {
       itemBuilder: (context, index) {
         final chip = chips[index];
         return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          child: OutlinedButton.icon(
+          margin: const EdgeInsets.symmetric(horizontal: 2),
+          child: TextButton.icon(
             onPressed: () {},
             icon: Icon(
               chip['icon'] as IconData,
               size: 18,
+              weight: 300,
               color: context.yt.textPrimary,
             ),
             label: Text(
               chip['label'] as String,
-              style: TextStyle(
+              style: th.YtText.body.copyWith(
                 color: context.yt.textPrimary,
-                fontSize: 13,
-                fontWeight: FontWeight.w400,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
               ),
             ),
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(color: context.yt.divider),
+            style: TextButton.styleFrom(
+              backgroundColor: context.yt.surfaceVariant,
+              foregroundColor: context.yt.textPrimary,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(18),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              minimumSize: const Size(0, 36),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
           ),
         );
@@ -220,24 +224,28 @@ Widget _buildHistoryRow(BuildContext context) {
       'title': 'Flutter 3.40 Released - What\'s New?',
       'channel': 'IBM Technology',
       'duration': '11:10',
+      'type': '',
     },
     {
       'thumb': 'assets/images/th2.jpg',
-      'title': 'Flutter 3.7 Release Highlights',
+      'title': 'Flutter 3.7 Release Highlights — LIVE',
       'channel': 'Beat The Hunger',
       'duration': '',
+      'type': 'live',
     },
     {
       'thumb': 'assets/images/th1.jpg',
-      'title': "Flutter vs React Native: Which is Better for 2026?",
+      'title': 'Flutter vs React Native: Which is Better for 2026?',
       'channel': 'Keegan Evans',
       'duration': '8:24',
+      'type': '',
     },
     {
       'thumb': 'assets/images/th2.jpg',
       'title': 'Flutter State Management Guide',
       'channel': 'Flutter Dev',
-      'duration': '14:32',
+      'duration': '',
+      'type': 'short',
     },
   ];
 
@@ -255,6 +263,7 @@ Widget _buildHistoryRow(BuildContext context) {
           title: item['title']!,
           channelName: item['channel']!,
           duration: item['duration']!,
+          type: item['type']!,
         );
       },
     ),
@@ -268,93 +277,190 @@ Widget _buildHistoryThumbnail({
   required String title,
   required String channelName,
   required String duration,
+  String type = '',
 }) {
-  return Container(
-    width: 180,
-    margin: const EdgeInsets.symmetric(horizontal: 4),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Stack(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.asset(
-                thumbnailPath,
-                width: 180,
-                height: 100,
-                fit: BoxFit.cover,
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VideoPlayerPage(
+            title: title,
+            channelName: channelName,
+            views: '',
+            time: '',
+            profileImage: 'assets/images/pi1.png',
+          ),
+        ),
+      );
+    },
+    child: Container(
+      width: 180,
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: Image.asset(
+                    thumbnailPath,
+                    width: 180,
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
-            ),
-            if (duration.isNotEmpty)
-              Positioned(
-                right: 4,
-                bottom: 4,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                    vertical: 2,
+              // badge: LIVE chip / Shorts chip / duration time chip
+              if (type == 'live')
+                Positioned(
+                  right: 4,
+                  bottom: 4,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.sensors,
+                          color: Colors.white,
+                          size: 12,
+                        ),
+                        const SizedBox(width: 3),
+                        Text(
+                          'LIVE',
+                          style: th.YtText.caption.copyWith(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withAlpha(200),
-                    borderRadius: BorderRadius.circular(3),
+                )
+              else if (type == 'short')
+                Positioned(
+                  right: 4,
+                  bottom: 4,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withAlpha(200),
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SvgPicture.asset(
+                          'assets/icons/shorts24x_color.svg',
+                          width: 10,
+                          height: 10,
+                        ),
+                        const SizedBox(width: 3),
+                        Text(
+                          'Shorts',
+                          style: th.YtText.caption.copyWith(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  child: Text(
-                    duration,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
+                )
+              else if (duration.isNotEmpty)
+                Positioned(
+                  right: 4,
+                  bottom: 4,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withAlpha(200),
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                    child: Text(
+                      duration,
+                      style: th.YtText.caption.copyWith(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  bottom: Radius.circular(8),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    bottom: Radius.circular(8),
+                  ),
+                  child: LinearProgressIndicator(
+                    value: 0.4,
+                    minHeight: 3,
+                    backgroundColor: Colors.transparent,
+                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
+                  ),
                 ),
-                child: LinearProgressIndicator(
-                  value: 0.4,
-                  minHeight: 3,
-                  backgroundColor: Colors.transparent,
-                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          // Title + more button
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: th.YtText.videoTitle.copyWith(
+                    color: context.yt.textPrimary,
+                    fontSize: 15,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+              GestureDetector(
+                onTap: () => showVideoOptionsSheet(context),
+                child: Icon(
+                  Icons.more_vert,
+                  color: context.yt.textSecondary,
+                  size: 18,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 2),
+          Text(
+            channelName,
+            style: th.YtText.videoMeta.copyWith(
+              color: context.yt.textSecondary,
             ),
-          ],
-        ),
-        const SizedBox(height: 6),
-        // Title + more button
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Text(
-                title,
-                style: TextStyle(
-                  color: context.yt.textPrimary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            Icon(Icons.more_vert, color: context.yt.textSecondary, size: 18),
-          ],
-        ),
-        const SizedBox(height: 2),
-        Text(
-          channelName,
-          style: TextStyle(color: context.yt.textSecondary, fontSize: 11),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ],
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
     ),
   );
 }
@@ -527,9 +633,9 @@ Widget _buildPlaylistThumbnail({
                               ),
                             Text(
                               count,
-                              style: const TextStyle(
+                              style: th.YtText.caption.copyWith(
                                 color: Colors.white,
-                                fontSize: 11,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -550,22 +656,28 @@ Widget _buildPlaylistThumbnail({
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(
+                style: th.YtText.videoTitle.copyWith(
                   color: context.yt.textPrimary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 15,
                 ),
-                maxLines: 1,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            Icon(Icons.more_vert, color: context.yt.textSecondary, size: 18),
+            GestureDetector(
+              onTap: () => showVideoOptionsSheet(context),
+              child: Icon(
+                Icons.more_vert,
+                color: context.yt.textSecondary,
+                size: 18,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 2),
         Text(
           privacy,
-          style: TextStyle(color: context.yt.textSecondary, fontSize: 11),
+          style: th.YtText.videoMeta.copyWith(color: context.yt.textSecondary),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -585,10 +697,9 @@ Widget _buildMenuItem(
     leading: Icon(icon, color: iconColor ?? context.yt.textPrimary, size: 26),
     title: Text(
       label,
-      style: TextStyle(
+      style: th.YtText.settingsItem.copyWith(
         color: context.yt.textPrimary,
-        fontSize: 15,
-        fontWeight: FontWeight.w400,
+        fontWeight: FontWeight.w500,
       ),
     ),
     contentPadding: const EdgeInsets.symmetric(horizontal: 16),
@@ -615,10 +726,9 @@ Widget _buildMenuItemImage(
     ),
     title: Text(
       label,
-      style: TextStyle(
+      style: th.YtText.settingsItem.copyWith(
         color: context.yt.textPrimary,
-        fontSize: 15,
-        fontWeight: FontWeight.w400,
+        fontWeight: FontWeight.w500,
       ),
     ),
     contentPadding: const EdgeInsets.symmetric(horizontal: 16),

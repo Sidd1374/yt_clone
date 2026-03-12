@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:video_player/video_player.dart';
+import 'theme_yt.dart' as th;
 import 'yt_widgets.dart';
 
 // data model for a single short
@@ -129,7 +130,7 @@ class _shortsPageFrameState extends State<shortsPageFrame> {
                       "Shorts",
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -335,11 +336,7 @@ class _ShortVideoPageState extends State<_ShortVideoPage> {
                   const SizedBox(width: 8),
                   Text(
                     widget.data.channel,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: th.YtText.bodyMedium.copyWith(color: Colors.white),
                   ),
                   const SizedBox(width: 8),
                   Container(
@@ -355,7 +352,7 @@ class _ShortVideoPageState extends State<_ShortVideoPage> {
                       "Subscribe",
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 12,
+                        fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -365,7 +362,11 @@ class _ShortVideoPageState extends State<_ShortVideoPage> {
               const SizedBox(height: 8),
               Text(
                 widget.data.title,
-                style: const TextStyle(color: Colors.white, fontSize: 13),
+                style: th.YtText.videoTitle.copyWith(
+                  color: Colors.white,
+                  fontSize: 15,
+                  height: 1.2,
+                ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -377,9 +378,8 @@ class _ShortVideoPageState extends State<_ShortVideoPage> {
                   Expanded(
                     child: Text(
                       widget.data.audio,
-                      style: const TextStyle(
+                      style: th.YtText.videoMeta.copyWith(
                         color: Colors.white70,
-                        fontSize: 12,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -408,7 +408,11 @@ Widget _buildActionButton(BuildContext context, IconData icon, String label) {
             padding: const EdgeInsets.only(top: 2),
             child: Text(
               label,
-              style: const TextStyle(color: Colors.white, fontSize: 11),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -439,7 +443,11 @@ Widget _buildSvgActionButton(
             padding: const EdgeInsets.only(top: 2),
             child: Text(
               label,
-              style: const TextStyle(color: Colors.white, fontSize: 11),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
               textAlign: TextAlign.center,
             ),
           ),

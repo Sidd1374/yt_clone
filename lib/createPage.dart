@@ -8,8 +8,9 @@ class createPageFrame extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text("This is CreatePage",
-          style: TextStyle(color: context.yt.textPrimary),
+        child: Text(
+          "This is CreatePage",
+          style: th.YtText.appBarTitle.copyWith(color: context.yt.textPrimary),
         ),
       ),
     );

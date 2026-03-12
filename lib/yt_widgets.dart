@@ -2,25 +2,47 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'theme_yt.dart' as th;
 import 'videoPlayerPage.dart';
+import 'shortsPage.dart';
+
+// data model for shorts thumbnail
+class ShortThumbnail {
+  final String title;
+  final String views;
+  final String imagePath;
+
+  const ShortThumbnail({
+    required this.title,
+    required this.views,
+    required this.imagePath,
+  });
+}
 
 // builds a single chip
 Widget buildChip(BuildContext context, String text, {bool selected = false}) {
-  return Container(
-    margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-    decoration: BoxDecoration(
-      color: selected ? context.yt.chipSelectedBg : context.yt.chipBg,
-      borderRadius: BorderRadius.circular(8),
-    ),
-    child: Center(
-      child: Text(
-        text,
-        style: TextStyle(
-          color: selected
-              ? context.yt.chipSelectedText
-              : context.yt.textPrimary,
-          fontSize: 14,
-          fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+    child: Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: () {},
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: selected ? context.yt.chipSelectedBg : context.yt.chipBg,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Center(
+            child: Text(
+              text,
+              style: th.YtText.label.copyWith(
+                color: selected
+                    ? context.yt.chipSelectedText
+                    : context.yt.textPrimary,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+              ),
+            ),
+          ),
         ),
       ),
     ),
@@ -88,10 +110,13 @@ Widget buildVideoCard(
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.asset(
-              thumbnailPath,
-              width: double.infinity,
-              fit: BoxFit.cover,
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Image.asset(
+                thumbnailPath,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           const SizedBox(height: 10),
@@ -109,10 +134,8 @@ Widget buildVideoCard(
                   children: [
                     Text(
                       title,
-                      style: TextStyle(
+                      style: th.YtText.videoTitle.copyWith(
                         color: context.yt.textPrimary,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -120,9 +143,8 @@ Widget buildVideoCard(
                     const SizedBox(height: 4),
                     Text(
                       "$channelName • $views • $time",
-                      style: TextStyle(
+                      style: th.YtText.videoMeta.copyWith(
                         color: context.yt.textSecondary,
-                        fontSize: 12,
                       ),
                     ),
                   ],
@@ -145,7 +167,7 @@ Widget buildVideoCard(
 }
 
 // builds the shorts section with horizontal thumbnails
-Widget buildShortsSection(BuildContext context) {
+Widget buildShortsSection(BuildContext context, List<ShortThumbnail> shorts) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -161,38 +183,38 @@ Widget buildShortsSection(BuildContext context) {
             const SizedBox(width: 8),
             Text(
               "Shorts",
-              style: TextStyle(
+              style: th.YtText.sectionHeader.copyWith(
                 color: context.yt.textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
               ),
             ),
             // Icon(Icons.chevron_right, color: context.yt.textSecondary),
             const Spacer(),
-            Icon(
-              Icons.more_vert,
-              color: context.yt.textSecondary,
-              size: 20,
-              weight: 1000,
+            GestureDetector(
+              onTap: () => showSectionOptionsSheet(context),
+              child: Icon(
+                Icons.more_vert,
+                color: context.yt.textSecondary,
+                size: 20,
+                weight: 1000,
+              ),
             ),
           ],
         ),
       ),
 
       SizedBox(
-        height: 250,
+        height: 284,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          itemCount: 4,
+          itemCount: shorts.length,
           itemBuilder: (context, index) {
+            final short = shorts[index];
             return _buildShortThumbnail(
               context: context,
-              title: "Short video title #${index + 1}",
-              views: "${(index + 1) * 100}K views",
-              imagePath: index.isEven
-                  ? "assets/images/th1.jpg"
-                  : "assets/images/th2.jpg",
+              title: short.title,
+              views: short.views,
+              imagePath: short.imagePath,
             );
           },
         ),
@@ -203,11 +225,13 @@ Widget buildShortsSection(BuildContext context) {
   );
 }
 
-Widget buildShortsGridSection(BuildContext context) {
+Widget buildShortsGridSection(
+  BuildContext context,
+  List<ShortThumbnail> shorts,
+) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-
       // ---------- Shorts Header ----------
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -223,19 +247,20 @@ Widget buildShortsGridSection(BuildContext context) {
 
             Text(
               "Shorts",
-              style: TextStyle(
+              style: th.YtText.sectionHeader.copyWith(
                 color: context.yt.textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
               ),
             ),
 
             const Spacer(),
 
-            Icon(
-              Icons.more_vert,
-              color: context.yt.textSecondary,
-              size: 20,
+            GestureDetector(
+              onTap: () => showSectionOptionsSheet(context),
+              child: Icon(
+                Icons.more_vert,
+                color: context.yt.textSecondary,
+                size: 20,
+              ),
             ),
           ],
         ),
@@ -247,21 +272,20 @@ Widget buildShortsGridSection(BuildContext context) {
         child: GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: 4, // change to 2 if you want only 2 shorts
+          itemCount: shorts.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, // 2 columns
+            crossAxisCount: 2,
             mainAxisSpacing: 8,
             crossAxisSpacing: 8,
             childAspectRatio: 9 / 16,
           ),
           itemBuilder: (context, index) {
+            final short = shorts[index];
             return _buildShortThumbnail(
               context: context,
-              title: "Short video title #${index + 1}",
-              views: "${(index + 1) * 100}K views",
-              imagePath: index.isEven
-                  ? "assets/images/th1.jpg"
-                  : "assets/images/th2.jpg",
+              title: short.title,
+              views: short.views,
+              imagePath: short.imagePath,
             );
           },
         ),
@@ -272,7 +296,6 @@ Widget buildShortsGridSection(BuildContext context) {
   );
 }
 
-
 // builds a single short thumbnail card
 Widget _buildShortThumbnail({
   required BuildContext context,
@@ -280,55 +303,79 @@ Widget _buildShortThumbnail({
   required String views,
   required String imagePath,
 }) {
-  return Container(
-    width: 160,
-    margin: const EdgeInsets.symmetric(horizontal: 4),
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset(imagePath, fit: BoxFit.cover),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [Colors.black87, Colors.transparent],
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      color: context.yt.textPrimary,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    views,
-                    style: TextStyle(
-                      color: context.yt.textSecondary,
-                      fontSize: 11,
-                    ),
-                  ),
-                ],
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              shortsPageFrame(onBack: () => Navigator.pop(context)),
+        ),
+      );
+    },
+    child: Container(
+      width: 160,
+      height: 160 * 16 / 9,
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Stack(
+          children: [
+            // Thumbnail
+            Positioned.fill(child: Image.asset(imagePath, fit: BoxFit.cover)),
+
+            // Menu Button
+            Positioned(
+              top: 6,
+              right: 6,
+              child: GestureDetector(
+                onTap: () => showSectionOptionsSheet(context),
+                child: Icon(Icons.more_vert, color: Colors.white, size: 20),
               ),
             ),
-          ),
-        ],
+
+            // Title overlay
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(10, 18, 10, 10),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [Color(0xE6000000), Colors.transparent],
+                    stops: [0.0, 0.9],
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: th.YtText.shortsTitle.copyWith(
+                        color: Colors.white,
+                        height: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      views,
+                      style: th.YtText.shortsMeta.copyWith(
+                        color: Colors.white70,
+                        height: 1.1,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     ),
   );
@@ -383,10 +430,68 @@ void showVideoOptionsSheet(BuildContext context) {
                       const SizedBox(width: 20),
                       Text(
                         item.$2,
-                        style: TextStyle(
+                        style: th.YtText.settingsSection.copyWith(
                           color: context.yt.textPrimary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+// shows youtube-style bottom sheet for posts/sections with limited options
+void showSectionOptionsSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: context.yt.surface,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (context) {
+      final items = [
+        (Icons.block, 'Not interested'),
+        (Icons.not_interested, "Don't recommend this channel"),
+        (Icons.flag_outlined, 'Report'),
+      ];
+
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // drag handle
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 220, 219, 219),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            ...items.map(
+              (item) => InkWell(
+                onTap: () => Navigator.pop(context),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 11,
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(item.$1, color: context.yt.textPrimary, size: 26),
+                      const SizedBox(width: 20),
+                      Text(
+                        item.$2,
+                        style: th.YtText.settingsSection.copyWith(
+                          color: context.yt.textPrimary,
                         ),
                       ),
                     ],
@@ -418,7 +523,11 @@ Widget buildChannelAvatar(
           width: 64,
           child: Text(
             name,
-            style: TextStyle(color: context.yt.textSecondary, fontSize: 10),
+            style: th.YtText.caption.copyWith(
+              color: context.yt.textSecondary,
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+            ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
@@ -472,9 +581,9 @@ Widget buildChannelAvatarsRow(
               child: Center(
                 child: Text(
                   "All",
-                  style: TextStyle(
+                  style: th.YtText.caption.copyWith(
                     color: context.yt.textPrimary,
-                    fontSize: 12,
+                    fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -485,4 +594,149 @@ Widget buildChannelAvatarsRow(
       ],
     ),
   );
+}
+
+// community post widget with like toggle and expandable description
+class CommunityPost extends StatefulWidget {
+  final String channelName;
+  final String profileImage;
+  final String timeAgo;
+  final String description;
+  final String postImage;
+
+  const CommunityPost({
+    super.key,
+    required this.channelName,
+    required this.profileImage,
+    required this.timeAgo,
+    required this.description,
+    required this.postImage,
+  });
+
+  @override
+  State<CommunityPost> createState() => _CommunityPostState();
+}
+
+class _CommunityPostState extends State<CommunityPost> {
+  bool isLiked = false;
+  bool expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // channel header
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundImage: AssetImage(widget.profileImage),
+                radius: 18,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: widget.channelName,
+                        style: th.YtText.bodyMedium.copyWith(
+                          color: context.yt.textPrimary,
+                        ),
+                      ),
+                      TextSpan(
+                        text: "  •  ${widget.timeAgo}",
+                        style: th.YtText.videoMeta.copyWith(
+                          color: context.yt.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () => showSectionOptionsSheet(context),
+                child: Icon(
+                  Icons.more_vert,
+                  color: context.yt.textSecondary,
+                  size: 20,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // description
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.description,
+                maxLines: expanded ? null : 2,
+                overflow: expanded ? null : TextOverflow.ellipsis,
+                style: th.YtText.body.copyWith(color: context.yt.textPrimary),
+              ),
+              const SizedBox(height: 4),
+              GestureDetector(
+                onTap: () => setState(() => expanded = !expanded),
+                child: Text(
+                  expanded ? "Show less" : "Read more",
+                  style: th.YtText.label.copyWith(
+                    color: context.yt.textSecondary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 10),
+
+        // post image
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+          child: Image.asset(
+            widget.postImage,
+            width: double.infinity,
+            fit: BoxFit.cover,
+          ),
+        ),
+
+        const SizedBox(height: 8),
+
+        // actions
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            children: [
+              IconButton(
+                icon: Icon(
+                  isLiked ? Icons.thumb_up : Icons.thumb_up_alt_outlined,
+                  color: context.yt.textPrimary,
+                ),
+                onPressed: () => setState(() => isLiked = !isLiked),
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.thumb_down_alt_outlined,
+                  color: context.yt.textPrimary,
+                ),
+                onPressed: () {},
+              ),
+              const Spacer(),
+              Icon(Icons.share_outlined, color: context.yt.textPrimary),
+              const SizedBox(width: 20),
+              Icon(Icons.mode_comment_outlined, color: context.yt.textPrimary),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 8),
+      ],
+    );
+  }
 }

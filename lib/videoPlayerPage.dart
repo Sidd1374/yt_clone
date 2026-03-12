@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 import 'theme_yt.dart' as th;
+import 'shortsPage.dart';
+import 'yt_widgets.dart';
 
 class VideoPlayerPage extends StatefulWidget {
   final String title;
@@ -359,7 +361,9 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
           const SizedBox(height: 4),
           Text(
             '${widget.channelName}  ${widget.views}  ${widget.time}  ...more',
-            style: TextStyle(color: context.yt.textSecondary, fontSize: 12),
+            style: th.YtText.videoMeta.copyWith(
+              color: context.yt.textSecondary,
+            ),
           ),
         ],
       ),
@@ -380,10 +384,8 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
           Expanded(
             child: Text(
               widget.channelName,
-              style: TextStyle(
+              style: th.YtText.bodyMedium.copyWith(
                 color: context.yt.textPrimary,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
               ),
             ),
           ),
@@ -395,11 +397,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
             ),
             child: Text(
               'Subscribe',
-              style: TextStyle(
-                color: context.yt.background,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+              style: th.YtText.button.copyWith(color: context.yt.background),
             ),
           ),
         ],
@@ -446,11 +444,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
             const SizedBox(width: 6),
             Text(
               label,
-              style: TextStyle(
-                color: context.yt.textPrimary,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
+              style: th.YtText.label.copyWith(color: context.yt.textPrimary),
             ),
           ],
         ],
@@ -478,16 +472,14 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
             children: [
               Text(
                 'Comments',
-                style: TextStyle(
+                style: th.YtText.bodyMedium.copyWith(
                   color: context.yt.textPrimary,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(width: 8),
               Text(
                 '2.7K',
-                style: TextStyle(color: context.yt.textSecondary, fontSize: 14),
+                style: th.YtText.body.copyWith(color: context.yt.textSecondary),
               ),
             ],
           ),
@@ -506,9 +498,9 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                   backgroundColor: context.yt.chipSelectedBg,
                   child: Text(
                     'J',
-                    style: TextStyle(
+                    style: th.YtText.caption.copyWith(
                       color: context.yt.chipSelectedText,
-                      fontSize: 12,
+                      fontSize: 13,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -520,18 +512,15 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                     children: [
                       Text(
                         'git push --force',
-                        style: TextStyle(
+                        style: th.YtText.label.copyWith(
                           color: context.yt.textPrimary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         'John should know his place',
-                        style: TextStyle(
+                        style: th.YtText.body.copyWith(
                           color: context.yt.textSecondary,
-                          fontSize: 12,
                         ),
                       ),
                     ],
@@ -587,7 +576,20 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     Map<String, String> video,
   ) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VideoPlayerPage(
+              title: video['title']!,
+              channelName: video['channel']!,
+              views: video['views']!,
+              time: video['time']!,
+              profileImage: video['profile']!,
+            ),
+          ),
+        );
+      },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Column(
@@ -597,10 +599,13 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
               borderRadius: BorderRadius.circular(12),
               child: Stack(
                 children: [
-                  Image.asset(
-                    video['thumbnail']!,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
+                  AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: Image.asset(
+                      video['thumbnail']!,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                   Positioned(
                     bottom: 8,
@@ -616,7 +621,11 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                       ),
                       child: const Text(
                         '7:05',
-                        style: TextStyle(color: Colors.white, fontSize: 11),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ),
@@ -638,10 +647,9 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                     children: [
                       Text(
                         video['title']!,
-                        style: TextStyle(
+                        style: th.YtText.videoTitle.copyWith(
                           color: context.yt.textPrimary,
                           fontSize: 15,
-                          fontWeight: FontWeight.w500,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -649,18 +657,20 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                       const SizedBox(height: 4),
                       Text(
                         '${video['channel']} · ${video['views']} · ${video['time']}',
-                        style: TextStyle(
+                        style: th.YtText.videoMeta.copyWith(
                           color: context.yt.textSecondary,
-                          fontSize: 12,
                         ),
                       ),
                     ],
                   ),
                 ),
-                Icon(
-                  Icons.more_vert,
-                  color: context.yt.textSecondary,
-                  size: 20,
+                GestureDetector(
+                  onTap: () => showVideoOptionsSheet(context),
+                  child: Icon(
+                    Icons.more_vert,
+                    color: context.yt.textSecondary,
+                    size: 20,
+                  ),
                 ),
               ],
             ),
@@ -693,66 +703,74 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
           ),
         ),
         SizedBox(
-          height: 250,
+          height: 284,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 8),
             itemCount: 4,
             itemBuilder: (context, index) {
-              return Container(
-                width: 160,
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Image.asset(
-                        index.isEven
-                            ? 'assets/images/th1.jpg'
-                            : 'assets/images/th2.jpg',
-                        fit: BoxFit.cover,
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.topCenter,
-                              colors: [Colors.black87, Colors.transparent],
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const shortsPageFrame(),
+                    ),
+                  );
+                },
+                child: Container(
+                  width: 160,
+                  height: 160 * 16 / 9,
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Image.asset(
+                          index.isEven
+                              ? 'assets/images/th1.jpg'
+                              : 'assets/images/th2.jpg',
+                          fit: BoxFit.cover,
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.bottomCenter,
+                                end: Alignment.topCenter,
+                                colors: [Colors.black87, Colors.transparent],
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Quantization explained #${index + 1}',
+                                  style: th.YtText.shortsTitle.copyWith(
+                                    color: Colors.white,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  '${(index + 1) * 150}K views',
+                                  style: th.YtText.shortsMeta.copyWith(
+                                    color: Colors.white70,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'Quantization explained #${index + 1}',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                '${(index + 1) * 150}K views',
-                                style: const TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 11,
-                                ),
-                              ),
-                            ],
-                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               );
