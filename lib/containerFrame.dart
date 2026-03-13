@@ -9,6 +9,7 @@ import 'libraryPage.dart';
 import 'shortsPage.dart';
 import 'search_page.dart';
 import 'main.dart';
+import 'explore_Bento.dart';
 
 final GlobalKey<ScaffoldState> rootScaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -77,7 +78,15 @@ class _ContainerFrameState extends State<ContainerFrame> {
                         ],
                       ),
                 actions: [
-                  IconButton(onPressed: () {}, icon: Icon(Icons.cast)),
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const ExploreBento()),
+                      );
+                    },
+                    icon: Icon(Icons.cast),
+                  ),
                   IconButton(
                     onPressed: () {},
                     icon: Icon(Icons.notifications_none),

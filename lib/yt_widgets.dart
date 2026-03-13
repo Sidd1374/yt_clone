@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'theme_yt.dart' as th;
 import 'videoPlayerPage.dart';
 import 'shortsPage.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 // data model for shorts thumbnail
 class ShortThumbnail {
@@ -15,6 +16,20 @@ class ShortThumbnail {
     required this.views,
     required this.imagePath,
   });
+}
+
+// Simple tile widget for demonstration
+class _BentoTile extends StatelessWidget {
+  final int index;
+  const _BentoTile({required this.index});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.grey[(index % 9 + 1) * 100],
+      child: Center(child: Text('Tile $index')),
+    );
+  }
 }
 
 // builds a single chip
@@ -739,4 +754,29 @@ class _CommunityPostState extends State<CommunityPost> {
       ],
     );
   }
+}
+
+Widget buildBentoExplore(BuildContext context) {
+  return GridView.custom(
+    gridDelegate: SliverQuiltedGridDelegate(
+      crossAxisCount: 3,
+      mainAxisSpacing: 4,
+      crossAxisSpacing: 4,
+      repeatPattern: QuiltedGridRepeatPattern.inverted,
+      pattern: [
+        QuiltedGridTile(1, 1),
+        QuiltedGridTile(1, 1),
+        QuiltedGridTile(2, 1),
+        QuiltedGridTile(1, 1),
+        QuiltedGridTile(1, 1),
+
+        // QuiltedGridTile(2, 1),
+        // QuiltedGridTile(2, 1),
+        // QuiltedGridTile(1, 2),
+      ],
+    ),
+    childrenDelegate: SliverChildBuilderDelegate(
+      (context, index) => _BentoTile(index: index),
+    ),
+  );
 }
