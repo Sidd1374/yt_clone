@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:video_player/video_player.dart';
 import 'theme_yt.dart' as th;
 import 'videoPlayerPage.dart';
 import 'shortsPage.dart';
@@ -18,16 +19,113 @@ class ShortThumbnail {
   });
 }
 
-// Simple tile widget for demonstration
-class _BentoTile extends StatelessWidget {
-  final int index;
-  const _BentoTile({required this.index});
+List<String> getDefaultBentoImagePaths() {
+  return const [
+    'assets/images/img1.jpg',
+    'assets/images/img2.jpg',
+    'assets/images/img3.jpg',
+    'assets/images/img4.jpg',
+    'assets/images/img5.jpg',
+    'assets/images/img6.jpg',
+    'assets/images/img7.jpg',
+    'assets/images/img8.jpg',
+  ];
+}
+
+Widget buildBentoTile(
+  BuildContext context, {
+  required String path,
+  BorderRadius borderRadius = const BorderRadius.all(Radius.circular(8)),
+  VoidCallback? onTap,
+}) {
+  final isVideo = path.toLowerCase().endsWith('.mp4');
+
+  if (!isVideo) {
+    return GestureDetector(
+      onTap: onTap,
+      child: ClipRRect(
+        borderRadius: borderRadius,
+        child: Image.asset(path, fit: BoxFit.cover),
+      ),
+    );
+  }
+
+  return _BentoVideoTile(path: path, borderRadius: borderRadius, onTap: onTap);
+}
+
+class _BentoVideoTile extends StatefulWidget {
+  final String path;
+  final BorderRadius borderRadius;
+  final VoidCallback? onTap;
+
+  const _BentoVideoTile({
+    required this.path,
+    required this.borderRadius,
+    this.onTap,
+  });
+
+  @override
+  State<_BentoVideoTile> createState() => _BentoVideoTileState();
+}
+
+class _BentoVideoTileState extends State<_BentoVideoTile> {
+  late VideoPlayerController _controller;
+  late Future<void> _initializeFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _initController();
+  }
+
+  @override
+  void didUpdateWidget(covariant _BentoVideoTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.path != widget.path) {
+      _controller.dispose();
+      _initController();
+    }
+  }
+
+  void _initController() {
+    _controller = VideoPlayerController.asset(widget.path);
+    _initializeFuture = _controller.initialize().then((_) {
+      _controller
+        ..setLooping(true)
+        ..play();
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.grey[(index % 9 + 1) * 100],
-      child: Center(child: Text('Tile $index')),
+    return GestureDetector(
+      onTap: widget.onTap,
+      child: ClipRRect(
+        borderRadius: widget.borderRadius,
+        child: FutureBuilder<void>(
+          future: _initializeFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              return FittedBox(
+                fit: BoxFit.cover,
+                child: SizedBox(
+                  width: _controller.value.size.width,
+                  height: _controller.value.size.height,
+                  child: VideoPlayer(_controller),
+                ),
+              );
+            }
+
+            return const Center(child: CircularProgressIndicator());
+          },
+        ),
+      ),
     );
   }
 }
@@ -756,27 +854,46 @@ class _CommunityPostState extends State<CommunityPost> {
   }
 }
 
-Widget buildBentoExplore(BuildContext context) {
-  return GridView.custom(
-    gridDelegate: SliverQuiltedGridDelegate(
-      crossAxisCount: 3,
-      mainAxisSpacing: 4,
-      crossAxisSpacing: 4,
-      repeatPattern: QuiltedGridRepeatPattern.inverted,
-      pattern: [
-        QuiltedGridTile(1, 1),
-        QuiltedGridTile(1, 1),
-        QuiltedGridTile(2, 1),
-        QuiltedGridTile(1, 1),
-        QuiltedGridTile(1, 1),
+Widget buildBentoExplore(BuildContext context, {List<String>? imagePaths}) {
+  final resolvedImagePaths = (imagePaths == null || imagePaths.isEmpty)
+      ? getDefaultBentoImagePaths()
+      : imagePaths;
 
-        // QuiltedGridTile(2, 1),
-        // QuiltedGridTile(2, 1),
-        // QuiltedGridTile(1, 2),
-      ],
-    ),
-    childrenDelegate: SliverChildBuilderDelegate(
-      (context, index) => _BentoTile(index: index),
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: GridView.custom(
+      gridDelegate: SliverQuiltedGridDelegate(
+        crossAxisCount: 3,
+        mainAxisSpacing: 2,
+        crossAxisSpacing: 2,
+        repeatPattern: QuiltedGridRepeatPattern.inverted,
+        pattern: [
+          QuiltedGridTile(1, 1),
+          QuiltedGridTile(1, 1),
+          QuiltedGridTile(2, 1),
+          QuiltedGridTile(1, 1),
+          QuiltedGridTile(1, 1),
+        ],
+      ),
+      childrenDelegate: SliverChildBuilderDelegate(
+        (context, index) => buildBentoTile(
+          context,
+          path: resolvedImagePaths[index],
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => shortsPageFrame(
+                  mediaPaths: resolvedImagePaths,
+                  initialIndex: index,
+                  onBack: () => Navigator.pop(context),
+                ),
+              ),
+            );
+          },
+        ),
+        childCount: resolvedImagePaths.length,
+      ),
     ),
   );
 }

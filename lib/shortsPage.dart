@@ -6,29 +6,38 @@ import 'yt_widgets.dart';
 
 // data model for a single short
 class _ShortData {
-  final String videoAsset;
+  final String mediaAsset;
   final String title;
   final String channel;
   final String profileImage;
   final String likes;
   final String comments;
   final String audio;
+  final bool isVideo;
 
   const _ShortData({
-    required this.videoAsset,
+    required this.mediaAsset,
     required this.title,
     required this.channel,
     required this.profileImage,
     required this.likes,
     required this.comments,
     required this.audio,
+    required this.isVideo,
   });
 }
 
 class shortsPageFrame extends StatefulWidget {
-  const shortsPageFrame({super.key, this.onBack});
+  const shortsPageFrame({
+    super.key,
+    this.onBack,
+    this.mediaPaths,
+    this.initialIndex = 0,
+  });
 
   final VoidCallback? onBack;
+  final List<String>? mediaPaths;
+  final int initialIndex;
 
   @override
   State<shortsPageFrame> createState() => _shortsPageFrameState();
@@ -37,42 +46,69 @@ class shortsPageFrame extends StatefulWidget {
 class _shortsPageFrameState extends State<shortsPageFrame> {
   late PageController _pageController;
   int _currentPage = 0;
-
-  // sample shorts data (all use the same video asset for now)
-  final List<_ShortData> _shorts = const [
-    _ShortData(
-      videoAsset: 'assets/videos/Final_Reel_01.mp4',
-      title: 'This is a sample Short video title 🔥',
-      channel: '@channelname',
-      profileImage: 'assets/images/pi1.png',
-      likes: '49',
-      comments: '2',
-      audio: 'Original audio - channelname',
-    ),
-    _ShortData(
-      videoAsset: 'assets/videos/Final_Reel_01.mp4',
-      title: 'Another trending Short 🚀',
-      channel: '@creator2',
-      profileImage: 'assets/images/pi1.png',
-      likes: '1.2K',
-      comments: '38',
-      audio: 'Trending sound - creator2',
-    ),
-    _ShortData(
-      videoAsset: 'assets/videos/Final_Reel_01.mp4',
-      title: 'You won\'t believe this! 😱',
-      channel: '@viral_clips',
-      profileImage: 'assets/images/pi1.png',
-      likes: '5.6K',
-      comments: '120',
-      audio: 'Original audio - viral_clips',
-    ),
-  ];
+  late final List<_ShortData> _shorts;
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
+    _shorts = _buildShortsData(widget.mediaPaths);
+    final startIndex = widget.initialIndex.clamp(0, _shorts.length - 1);
+    _currentPage = startIndex;
+    _pageController = PageController(initialPage: startIndex);
+  }
+
+  List<_ShortData> _buildShortsData(List<String>? mediaPaths) {
+    if (mediaPaths == null || mediaPaths.isEmpty) {
+      return const [
+        _ShortData(
+          mediaAsset: 'assets/videos/Final_Reel_01.mp4',
+          title: 'This is a sample Short video title 🔥',
+          channel: '@channelname',
+          profileImage: 'assets/images/pi1.png',
+          likes: '49',
+          comments: '2',
+          audio: 'Original audio - channelname',
+          isVideo: true,
+        ),
+        _ShortData(
+          mediaAsset: 'assets/videos/Final_Reel_01.mp4',
+          title: 'Another trending Short 🚀',
+          channel: '@creator2',
+          profileImage: 'assets/images/pi1.png',
+          likes: '1.2K',
+          comments: '38',
+          audio: 'Trending sound - creator2',
+          isVideo: true,
+        ),
+        _ShortData(
+          mediaAsset: 'assets/videos/Final_Reel_01.mp4',
+          title: 'You won\'t believe this! 😱',
+          channel: '@viral_clips',
+          profileImage: 'assets/images/pi1.png',
+          likes: '5.6K',
+          comments: '120',
+          audio: 'Original audio - viral_clips',
+          isVideo: true,
+        ),
+      ];
+    }
+
+    return List<_ShortData>.generate(mediaPaths.length, (index) {
+      final path = mediaPaths[index];
+      final isVideo = path.toLowerCase().endsWith('.mp4');
+      return _ShortData(
+        mediaAsset: path,
+        title: isVideo
+            ? 'Short video #${index + 1}'
+            : 'Photo short #${index + 1}',
+        channel: '@yt_clone',
+        profileImage: 'assets/images/pi1.png',
+        likes: '${(index + 1) * 37}',
+        comments: '${(index + 1) * 3}',
+        audio: isVideo ? 'Original audio - yt_clone' : 'Image post - yt_clone',
+        isVideo: isVideo,
+      );
+    });
   }
 
   @override
@@ -178,47 +214,57 @@ class _ShortVideoPage extends StatefulWidget {
 }
 
 class _ShortVideoPageState extends State<_ShortVideoPage> {
-  late VideoPlayerController _controller;
+  VideoPlayerController? _controller;
   bool _isInitialized = false;
   bool _showPauseIcon = false;
+
+  bool get _isVideo => widget.data.isVideo;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset(widget.data.videoAsset)
-      ..setLooping(true)
-      ..initialize().then((_) {
-        if (mounted) {
-          setState(() => _isInitialized = true);
-          if (widget.isActive) _controller.play();
-        }
-      });
+    if (_isVideo) {
+      _controller = VideoPlayerController.asset(widget.data.mediaAsset)
+        ..setLooping(true)
+        ..initialize().then((_) {
+          if (mounted) {
+            setState(() => _isInitialized = true);
+            if (widget.isActive) _controller?.play();
+          }
+        });
+    } else {
+      _isInitialized = true;
+    }
   }
 
   @override
   void didUpdateWidget(covariant _ShortVideoPage oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (!_isVideo || _controller == null) return;
+
     if (widget.isActive && !oldWidget.isActive) {
-      _controller.seekTo(Duration.zero);
-      _controller.play();
+      _controller?.seekTo(Duration.zero);
+      _controller?.play();
     } else if (!widget.isActive && oldWidget.isActive) {
-      _controller.pause();
+      _controller?.pause();
     }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   void _togglePlayPause() {
+    if (!_isVideo || _controller == null) return;
+
     setState(() {
-      if (_controller.value.isPlaying) {
-        _controller.pause();
+      if (_controller!.value.isPlaying) {
+        _controller!.pause();
         _showPauseIcon = true;
       } else {
-        _controller.play();
+        _controller!.play();
         _showPauseIcon = false;
       }
     });
@@ -231,21 +277,27 @@ class _ShortVideoPageState extends State<_ShortVideoPage> {
       children: [
         // video player with tap & long press
         if (_isInitialized)
-          GestureDetector(
-            onTap: _togglePlayPause,
-            onLongPress: () => showVideoOptionsSheet(context),
-            child: Center(
-              child: AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                child: VideoPlayer(_controller),
+          if (_isVideo && _controller != null)
+            GestureDetector(
+              onTap: _togglePlayPause,
+              onLongPress: () => showVideoOptionsSheet(context),
+              child: Center(
+                child: AspectRatio(
+                  aspectRatio: _controller!.value.aspectRatio,
+                  child: VideoPlayer(_controller!),
+                ),
               ),
-            ),
-          )
+            )
+          else
+            GestureDetector(
+              onLongPress: () => showSectionOptionsSheet(context),
+              child: Image.asset(widget.data.mediaAsset, fit: BoxFit.cover),
+            )
         else
           const Center(child: CircularProgressIndicator(color: Colors.white)),
 
         // pause icon overlay
-        if (_showPauseIcon)
+        if (_isVideo && _showPauseIcon)
           const Center(
             child: Icon(Icons.pause_rounded, color: Colors.white70, size: 72),
           ),
